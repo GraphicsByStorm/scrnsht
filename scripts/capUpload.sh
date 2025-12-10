@@ -16,7 +16,6 @@ fi
 source "$CONFIG_FILE"
 
 # Ensure required commands exist
-# SCREENSHOT_CMD might contain args (e.g. "gnome-screenshot -f"), so split the base command
 BASE_SCREENSHOT_CMD="${SCREENSHOT_CMD%% *}"
 
 for cmd in mount umount "$BASE_SCREENSHOT_CMD"; do
@@ -33,14 +32,13 @@ mkdir -p "$LOCAL_SCREENSHOT_DIR" "$MOUNT_POINT"
 TIMESTAMP="$(date +%F-%H%M%S)"
 LOCAL_FILE="$LOCAL_SCREENSHOT_DIR/${SCREENSHOT_PREFIX}-${TIMESTAMP}.png"
 
-cleanup() {
+cleanup_mount() {
   echo "Cleaning up: attempting to unmount $MOUNT_POINT"
   sudo umount "$MOUNT_POINT" 2>/dev/null || true
 }
-trap cleanup EXIT
+trap cleanup_mount EXIT
 
 echo "Taking screenshot to: $LOCAL_FILE"
-# $SCREENSHOT_CMD already includes its own flags, just append filename
 # shellcheck disable=SC2086
 $SCREENSHOT_CMD "$LOCAL_FILE"
 
@@ -51,7 +49,7 @@ fi
 
 if [[ ! -f "$SMB_CREDENTIALS_FILE" ]]; then
   echo "SMB credentials file not found: $SMB_CREDENTIALS_FILE"
-  echo "Expected a file like:"
+  echo "Expected a file like (for Guest):"
   echo "  username=Guest"
   echo "  password="
   echo "  domain=WORKGROUP"
@@ -72,5 +70,22 @@ sync
 echo "Unmounting SMB share..."
 sudo umount "$MOUNT_POINT" || true
 
-echo "Upload complete. Shutting down..."
-$SHUTDOWN_CMD
+# Disable mount cleanup trap (we already unmounted manually)
+trap - EXIT
+
+echo "Upload complete."
+
+# --------------------------------
+# Run cleanup (Timeshift + remove git + delete repo)
+# --------------------------------
+CLEANUP_SCRIPT="$SCRIPT_DIR/cleanup_git_and_snapshot.sh"
+
+if [[ -x "$CLEANUP_SCRIPT" ]]; then
+  echo "Running cleanup script: $CLEANUP_SCRIPT"
+  "$CLEANUP_SCRIPT"
+else
+  echo "Cleanup script not found or not executable: $CLEANUP_SCRIPT"
+  echo "Skipping cleanup."
+fi
+
+echo "capture_and_upload.sh finished."
