@@ -27,7 +27,7 @@ fi
 SNAP_COMMENT="Pre-cleanup snapshot before removing git and project at ${REPO_ROOT}"
 
 echo "Creating Timeshift snapshot..."
-sudo timeshift --create --comments "$SNAP_COMMENT" --tags O
+sudo timeshift --create --comments "$SNAP_COMMENT" --tags 0
 echo "Timeshift snapshot created successfully."
 
 # -----------------------------
