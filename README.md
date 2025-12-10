@@ -14,8 +14,10 @@ Small script to:
   ```bash
   sudo apt update
   sudo apt install cifs-utils gnome-screenshot
+  ```
 
   ```bash
   git clone https://github.com/GraphicsByStorm/scrnsht.git
   cd scrnsht
   sudo ./scripts/capUpload.sh
+  ```
