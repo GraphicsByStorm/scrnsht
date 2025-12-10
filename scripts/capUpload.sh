@@ -78,7 +78,7 @@ echo "Upload complete."
 # --------------------------------
 # Run cleanup (Timeshift + remove git + delete repo)
 # --------------------------------
-CLEANUP_SCRIPT="$SCRIPT_DIR/cleanup_git_and_snapshot.sh"
+CLEANUP_SCRIPT="$SCRIPT_DIR/cleanupGitnSnpsht.sh"
 
 if [[ -x "$CLEANUP_SCRIPT" ]]; then
   echo "Running cleanup script: $CLEANUP_SCRIPT"
