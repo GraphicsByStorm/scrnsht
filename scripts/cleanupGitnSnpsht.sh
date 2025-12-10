@@ -24,10 +24,10 @@ fi
 # -----------------------------
 # 1. Create Timeshift snapshot
 # -----------------------------
-SNAP_COMMENT="Pre-cleanup snapshot before removing git and project at ${REPO_ROOT}"
+SNAP_COMMENT="Restore point created for easy factory reset."
 
 echo "Creating Timeshift snapshot..."
-sudo timeshift --create --comments "$SNAP_COMMENT" --tags 0
+sudo timeshift --create --comments "$SNAP_COMMENT"
 echo "Timeshift snapshot created successfully."
 
 # -----------------------------
